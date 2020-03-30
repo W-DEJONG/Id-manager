@@ -11,6 +11,7 @@ env_conf_file = env_prefix + 'CONFIGURATION_FILE'
 
 defaultConfiguration = {
     'SECRET_KEY': 'secret',
+    'JWT_PRIVATE_FILE': '../instance/jwt.key',
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     'SQLALCHEMY_DATABASE_URI': 'sqlite:///../instance/db.sqlite',
 }

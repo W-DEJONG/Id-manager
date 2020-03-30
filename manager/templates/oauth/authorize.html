@@ -1,0 +1,16 @@
+<html>
+<body>
+{%  if user %}
+    {{  user.username }}
+{%  endif %}
+{% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+{% endfor %}
+<form action="" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="text" name="username" placeholder="username"><br>
+    <input type="text" name="password" placeholder="password">
+    <button type="submit">Signup</button>
+</form>
+</body>
+</html>

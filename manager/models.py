@@ -12,7 +12,9 @@ csrf = CSRFProtect()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String(64), unique=True)
     username = db.Column(db.String(40), unique=True)
+    password = db.Column(db.String(255))
 
     def __str__(self):
         return self.username
@@ -25,9 +27,6 @@ class OAuth2Client(db.Model, OAuth2ClientMixin):
     __tablename__ = 'oauth2_client'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
-    user = db.relationship('User')
 
 
 class OAuth2AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):

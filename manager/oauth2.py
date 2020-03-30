@@ -15,15 +15,24 @@ from authlib.oidc.core.grants import (
 )
 from authlib.oidc.core import UserInfo
 from werkzeug.security import gen_salt
+
 from .models import db, User
 from .models import OAuth2Client, OAuth2AuthorizationCode, OAuth2Token
 
-DUMMY_JWT_CONFIG = {
-    'key': 'secret-key',
-    'alg': 'HS256',
-    'iss': 'https://authlib.org',
-    'exp': 3600,
-}
+
+def read_file(file_name):
+    with open(file_name, 'rb') as f:
+        contents = f.read()
+    return contents
+
+
+def jwt_config():
+    return {
+        'key': read_file('/Users/wj/Developer/id-manager/instance/jwt.key'),
+        'alg': 'HS256',
+        'iss': 'https://authlib.org',
+        'exp': 3600,
+    }
 
 
 def exists_nonce(nonce, req):
@@ -34,7 +43,14 @@ def exists_nonce(nonce, req):
 
 
 def generate_user_info(user, scope):
-    return UserInfo(sub=str(user.id), name=user.username)
+    user_info = UserInfo(sub=str(user.uuid), name=user.username)
+    scope_list = scope.split()
+    if 'profile' in scope_list:
+        user_info['profile'] = {
+            'id': user.id,
+            'username': user.username
+        }
+    return user_info
 
 
 def create_authorization_code(client, grant_user, request):
@@ -76,7 +92,7 @@ class OpenIDCode(_OpenIDCode):
         return exists_nonce(nonce, request)
 
     def get_jwt_config(self, grant):
-        return DUMMY_JWT_CONFIG
+        return jwt_config()
 
     def generate_user_info(self, user, scope):
         return generate_user_info(user, scope)
@@ -87,7 +103,7 @@ class ImplicitGrant(_OpenIDImplicitGrant):
         return exists_nonce(nonce, request)
 
     def get_jwt_config(self, grant):
-        return DUMMY_JWT_CONFIG
+        return jwt_config()
 
     def generate_user_info(self, user, scope):
         return generate_user_info(user, scope)
@@ -101,7 +117,7 @@ class HybridGrant(_OpenIDHybridGrant):
         return exists_nonce(nonce, request)
 
     def get_jwt_config(self):
-        return DUMMY_JWT_CONFIG
+        return jwt_config()
 
     def generate_user_info(self, user, scope):
         return generate_user_info(user, scope)
