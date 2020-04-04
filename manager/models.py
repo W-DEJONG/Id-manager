@@ -13,7 +13,7 @@ csrf = CSRFProtect()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String(64), unique=True)
-    username = db.Column(db.String(40), unique=True)
+    username = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
 
     def __str__(self):
@@ -23,18 +23,26 @@ class User(db.Model):
         return self.id
 
 
+class UserClientScope(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user = db.relationship('User')
+    client_id = db.Column(db.Integer, db.ForeignKey('oauth2_client.id', ondelete='CASCADE'))
+    client = db.relationship('OAuth2Client')
+
+
 class OAuth2Client(db.Model, OAuth2ClientMixin):
     __tablename__ = 'oauth2_client'
 
     id = db.Column(db.Integer, primary_key=True)
+    client_tag = db.Column(db.String(64), index=True)
 
 
 class OAuth2AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
     __tablename__ = 'oauth2_code'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     user = db.relationship('User')
 
 
@@ -42,6 +50,5 @@ class OAuth2Token(db.Model, OAuth2TokenMixin):
     __tablename__ = 'oauth2_token'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     user = db.relationship('User')
