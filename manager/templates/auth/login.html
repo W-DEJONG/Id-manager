@@ -1,5 +1,6 @@
 <html>
 <body>
+    <h1>Login</h1>
 {%  if user %}
     {{  user.username }}
 {%  endif %}
@@ -8,6 +9,12 @@
 {% endfor %}
 <form action="" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="text" name="username" placeholder="username"><br>
+    <input type="text" name="password" placeholder="password"><br>
+    <label>
+        <input type="checkbox" name="remember_me">
+        <span>Remember me for 30 days</span>
+    </label><br>
     <button type="submit">Signup</button>
 </form>
 </body>

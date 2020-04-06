@@ -13,13 +13,14 @@ bp.cli.help = 'Maintain oauth2 clients'
 
 
 @bp.cli.command(name='create')
-@click.option('-t', '--client-tag', type=click.STRING, help='client tag')
+@click.option('-t', '--client-tag', type=click.STRING, prompt=True, help='client tag')
 @click.option('-n', '--client-name', type=click.STRING, prompt=True, help='client name')
 @click.option('-u', '--client-uri', type=click.STRING, prompt=True, default='https://example.com', help='client URI')
 @click.option('-r', '--redirect-url', type=click.STRING, prompt=True, default='https://example.com',
               help='redirect URL(s), multiple separated by <space>')
 @click.option('-s', '--scope', type=click.STRING, default='openid profile', help='client scope')
-def create_client(client_tag, client_name, client_uri, redirect_url, scope):
+@click.option('-R', '--supported-roles', type=click.STRING, default='connect admin', help='Supported user roles')
+def create_client(client_tag, client_name, client_uri, redirect_url, scope, supported_roles):
     """Create an oauth2 client."""
 
     redirects = [s.strip() for s in redirect_url.split()]
@@ -27,14 +28,15 @@ def create_client(client_tag, client_name, client_uri, redirect_url, scope):
     client = OAuth2Client(client_tag=client_tag,
                           client_id=str(uuid4()),
                           client_secret=gen_salt(48),
-                          client_id_issued_at=int(time.time()))
+                          client_id_issued_at=int(time.time()),
+                          supported_roles=supported_roles)
     client_metadata = {
         "client_name": client_name,
         "client_uri": client_uri,
         "grant_types": ['authorization_code'],
         "redirect_uris": redirects,
         "response_types": ['code'],
-        "scope": 'openid profile',
+        "scope": scope,
         "token_endpoint_auth_method": 'client_secret_basic'
     }
 
@@ -74,9 +76,9 @@ def list_clients(verbose):
                     client.client_uri))
 
 
-@bp.cli.command(name='info', help='Display oauth client details.')
+@bp.cli.command(name='show', help='Display oauth client details.')
 @click.argument('client-id')
-def info_client(client_id):
+def show_client(client_id):
     client = OAuth2Client.query.filter_by(client_id=client_id).first()
     if client is None:
         client = OAuth2Client.query.filter_by(client_tag=client_id).first()
@@ -100,4 +102,5 @@ def _show_client_details(client: OAuth2Client):
     click.echo('Client secret  : ' + client.client_secret)
     click.echo('Client URI     : ' + client.client_uri)
     click.echo('Redirect URL(s): ' + ' '.join(client.redirect_uris))
-    click.echo('scope: ' + client.scope)
+    click.echo('scope          : ' + client.scope)
+    click.echo('Supported roles: ' + client.supported_roles)

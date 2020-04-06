@@ -7,7 +7,7 @@ from authlib.integrations.sqla_oauth2 import (
 )
 from authlib.oauth2.rfc6749.grants import (
     AuthorizationCodeGrant as _AuthorizationCodeGrant,
-)
+    ClientCredentialsGrant)
 from authlib.oidc.core.grants import (
     OpenIDCode as _OpenIDCode,
     OpenIDImplicitGrant as _OpenIDImplicitGrant,
@@ -18,6 +18,7 @@ from werkzeug.security import gen_salt
 
 from .models import db, User
 from .models import OAuth2Client, OAuth2AuthorizationCode, OAuth2Token
+from flask import request, current_app
 
 
 def read_file(file_name):
@@ -28,9 +29,9 @@ def read_file(file_name):
 
 def jwt_config():
     return {
-        'key': read_file('/Users/wj/Developer/id-manager/instance/jwt.key'),
+        'key': read_file(current_app.instance_path + '/' + current_app.config['JWT_PRIVATE_FILE']),
         'alg': 'HS256',
-        'iss': 'https://authlib.org',
+        'iss': request.host_url,
         'exp': 3600,
     }
 
@@ -42,14 +43,23 @@ def exists_nonce(nonce, req):
     return bool(exists)
 
 
-def generate_user_info(user, scope):
-    user_info = UserInfo(sub=str(user.uuid), name=user.username)
+def generate_user_info(user, scope, ):
+    user_info = UserInfo(
+        sub=str(user.uuid)
+    )
     scope_list = scope.split()
     if 'profile' in scope_list:
-        user_info['profile'] = {
-            'id': user.id,
-            'username': user.username
-        }
+        user_info.update({
+            'name': user.get_full_name(),
+            'given_name': user.given_name,
+            'family_name': user.family_name,
+            'middle_name': user.middle_name,
+            'nickname': user.nickname,
+            'locale': user.locale,
+            'updated_at': user.updated_at
+        })
+    if 'email' in scope_list:
+        user_info['email'] = user.email
     return user_info
 
 
@@ -142,6 +152,9 @@ def config_oauth(app):
     ])
     authorization.register_grant(ImplicitGrant)
     authorization.register_grant(HybridGrant)
+
+    # support client grants
+    authorization.register_grant(ClientCredentialsGrant)
 
     # protect resource
     bearer_cls = create_bearer_token_validator(db.session, OAuth2Token)

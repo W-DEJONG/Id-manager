@@ -1,12 +1,15 @@
-from argon2.exceptions import VerifyMismatchError
-from flask import Blueprint, request, render_template, flash, redirect, url_for, session
+import functools
+
 from argon2 import PasswordHasher
-from uuid import uuid4
-from .models import db, User
+from argon2.exceptions import VerifyMismatchError
+from flask import request, current_app, abort
+from flask_login import LoginManager, current_user
+from flask_wtf import CSRFProtect
 
-bp = Blueprint(__name__, 'accounts')
-
+csrf = CSRFProtect()
 hash_provider = PasswordHasher()
+login_manager = LoginManager()
+login_manager.login_view = "manager.routes.auth.login"
 
 
 def hash_pwd(pwd):
@@ -21,36 +24,18 @@ def verify_pwd(stored_hash, pwd):
         return False
 
 
-def current_user():
-    if 'id' in session:
-        uid = session['id']
-        return User.query.get(uid)
-    return None
+def roles_required(roles_str='', operator='AND'):
+    def wrapper(f):
+        @functools.wraps(f)
+        def decorated(*args, **kwargs):
+            if request.method in set(['OPTIONS']):
+                return f(*args, **kwargs)
+            elif not current_user.is_authenticated:
+                return current_app.login_manager.unauthorized()
+            elif not current_user.roles.validate_roles(roles_str, operator):
+                abort(401)
+            return f(*args, **kwargs)
 
+        return decorated
 
-
-
-@bp.route('/auth/create-account', methods=('GET', 'POST'))
-def create_account():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        else:
-            user = User.query.filter_by(username=username).first()
-            if not user:
-                user = User(
-                    uuid=str(uuid4()),
-                    username=username,
-                    password=hash_pwd(password)
-                )
-                db.session.add(user)
-                db.session.commit()
-                return redirect(url_for('manager.auth.login'))
-            error = 'User {} is already registered.'.format(username)
-        flash(error)
-
-    return render_template('auth/create_account.html')
+    return wrapper

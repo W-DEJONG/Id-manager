@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: ID manager
+  description: |
+    # ID manager API documentation
+tags:
+  - name: oauth2
+    description: Authentication & token endpoints  
+
+paths:
+  /oauth/authorize:
+    get:
+      tags:
+        - oauth2
+      description: Open ID authorization endpoint
+      parameters:
+        - $ref: "#/components/parameters/client_id"
+        - $ref: "#/components/parameters/scope"
+        - $ref: "#/components/parameters/response_type"
+        - $ref: "#/components/parameters/redirect_uri"
+        - $ref: "#/components/parameters/state"
+      responses:
+        "301":
+          description: Redirect URI
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+  /oauth/token:
+    post:
+      tags:
+        - oauth2
+      description: | 
+        Request an authorization token  
+        Uses Basic Auth with client credentials.
+      security:
+        - BasicAuth: []
+      parameters:
+        - $ref: "#/components/parameters/grant_type"
+        - $ref: "#/components/parameters/code"      
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+
+  parameters:
+    code:
+      name: code
+      in: query
+      required: false
+      description: Authorization code received during authorization process required for `authorization_code` grant
+      schema:
+        type: string
+    grant_type:
+      name: grant_type
+      in: query
+      required: true
+      description: oauth2 grant type (`authorization_code` or `client_credentials`)
+      schema:
+        type: string
+    state:
+      name: state
+      in: query
+      required: false
+      description: shared state between request and callback
+      schema:
+        type: string
+    redirect_uri:
+      name: redirect_uri
+      in: query
+      required: false
+      description: redirect URI
+      schema:
+        type: string
+    response_type:
+      name: response_type
+      in: query
+      required: true
+      description: oauth2 response type (must be `code`)
+      schema:
+        type: string
+    scope:
+      name: scope
+      in: query
+      required: true
+      description: oauth2 scope
+      schema:
+        type: string
+    client_id:
+      name: client_id
+      in: query
+      required: true
+      description: oauth2 client id
+      schema:
+        type: string
+
+

@@ -1,48 +1,28 @@
-import os
+from os import getenv
 
-from flask import Flask
+# Flask settings
+SECRET_KEY = getenv('MANAGER_SECRET_K', 'id_manager_secret')
+SESSION_COOKIE_NAME = 'id'
 
-# Config steps:
-# 1 - Code defaults
-# 2 - Settings file
-# 3 - Environment settings
-env_prefix = 'ID_MANAGER_'
-env_conf_file = env_prefix + 'CONFIGURATION_FILE'
+# SQL Alchemy settings
+SQLALCHEMY_TRACK_MODIFICATIONS = False,
+SQLALCHEMY_DATABASE_URI = getenv('MANAGER_DATABASE_URI', 'sqlite:///../instance/db.sqlite')
 
-defaultConfiguration = {
-    'SECRET_KEY': 'secret',
-    'JWT_PRIVATE_FILE': '../instance/jwt.key',
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-    'SQLALCHEMY_DATABASE_URI': 'sqlite:///../instance/db.sqlite',
-}
+# Authlib settings
+OAUTH2_TOKEN_EXPIRES_IN = dict(
+    authorization_code=3600,
+    implicit=3600,
+    password=3600,
+    client_credentials=3600
+)
 
+JWT_PRIVATE_FILE = getenv('MANAGER_PRIVATE_KEY_FILE', 'jwt.key')
+JWT_PUBLIC_FILE = getenv('MANAGER_PUBLIC_KEY_FILE', 'jwt.key.pub')
 
-def parse_env_value(value: str):
-    if value.lower() == 'true':
-        return True
-    if value.lower() == 'false':
-        return False
-    try:
-        value = int(value)
-    except ValueError:
-        pass
+# Flask-Login settings
+USE_SESSION_FOR_NEXT = True
+SESSION_PROTECTION = "strong"
 
-    return value
-
-
-def init_app(app: Flask, test_config=None):
-    app.config.update(defaultConfiguration)
-    app.config.from_pyfile('../' + app.name + '.conf')
-
-    if env_conf_file in os.environ:
-        app.config.from_envvar(env_conf_file)
-
-    for key, value in os.environ.items():
-        if not key.startswith(env_prefix):
-            continue
-        key = key[len(env_prefix):]
-        if key in defaultConfiguration:
-            app.config[key] = parse_env_value(value)
-
-    if test_config is not None:
-        app.config.from_mapping(test_config)
+REMEMBER_COOKIE_NAME = 't'
+REMEMBER_COOKIE_DURATION = 60 * 60 * 24 * 30  # 30 days
+REMEMBER_COOKIE_HTTPONLY = True

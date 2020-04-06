@@ -6,9 +6,6 @@
 {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
 {% endfor %}
-<form action="" method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <button type="submit">Signup</button>
-</form>
+<h1>You have been logged out</h1>
 </body>
 </html>

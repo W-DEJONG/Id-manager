@@ -1,12 +1,13 @@
 <html>
 <body>
+    <h1>Create new account</h1>
 {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
 {% endfor %}
 <form action="" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <input type="text" name="username" placeholder="username">
-    <input type="text" name="password" placeholder="password">
+    <input type="text" name="username" placeholder="username"><br>
+    <input type="text" name="password" placeholder="password"><br>
     <button type="submit">Signup</button>
 </form>
 </body>
