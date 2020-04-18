@@ -6,7 +6,7 @@ from manager.auth import login_manager, verify_pwd, hash_pwd
 from manager.models import db, User
 from manager.auth import roles_required
 
-bp = Blueprint(__name__, 'accounts')
+bp = Blueprint(__name__, 'auth')
 
 
 @login_manager.user_loader

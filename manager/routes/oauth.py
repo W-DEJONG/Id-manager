@@ -1,11 +1,9 @@
-from flask import Blueprint, request, session, flash, render_template, jsonify, current_app as app
+from flask import Blueprint, request, current_app
 from flask_login import current_user, login_required
 from manager.auth import csrf
-from manager.models import User, UserRole, OAuth2Client
 from manager.oauth2 import authorization, require_oauth, generate_user_info
-from authlib.integrations.flask_oauth2 import current_token
 
-bp = Blueprint(__name__, 'accounts')
+bp = Blueprint(__name__, 'oauth')
 
 
 @bp.route('/oauth/authorize', methods=('GET', 'POST'))
@@ -13,7 +11,7 @@ bp = Blueprint(__name__, 'accounts')
 def authorize():
     user = current_user
     grant = authorization.validate_consent_request(end_user=user)
-    #
+    # TODO: Proper implementation with scope consents
     # if request.method == 'POST':
     #     username = request.form.get('username')
     #     password = request.form.get('password')
@@ -44,7 +42,7 @@ def issue_token():
 
 @bp.route('/oauth/config')
 def oauth_config():
-    with open(app.instance_path + '/' + app.config['JWT_PUBLIC_FILE']) as f:
+    with open(current_app.instance_path + '/' + current_app.config['JWT_PUBLIC_FILE']) as f:
         jwt = f.read()
 
     return {
@@ -53,17 +51,3 @@ def oauth_config():
         'iss': request.host_url,
         'exp': 3600,
     }
-
-
-@bp.route('/user-info')
-@require_oauth('profile email roles', 'OR')
-def user_info():
-    scope = current_token.scope
-    user = current_token.user
-    info = generate_user_info(user, scope)
-    if 'roles' in scope:
-        user_role = UserRole.query.join(OAuth2Client) \
-            .filter(UserRole.user == user, OAuth2Client.client_id == current_token.client_id) \
-            .first()
-        info['roles'] = user_role.client_roles if user_role else ''
-    return jsonify(info)
