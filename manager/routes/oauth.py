@@ -6,7 +6,7 @@ from manager.oauth2 import authorization, require_oauth, generate_user_info
 bp = Blueprint(__name__, 'oauth')
 
 
-@bp.route('/oauth/authorize', methods=('GET', 'POST'))
+@bp.route('/oauth/v2/authorize', methods=('GET', 'POST'))
 @login_required
 def authorize():
     user = current_user
@@ -34,13 +34,13 @@ def authorize():
     # return render_template('oauth/authorize.html', user=user, grant=grant)
 
 
-@bp.route('/oauth/token', methods=['POST'])
+@bp.route('/oauth/v2/token', methods=['POST'])
 @csrf.exempt
 def issue_token():
     return authorization.create_token_response()
 
 
-@bp.route('/oauth/config')
+@bp.route('/oauth/v2/config')
 def oauth_config():
     with open(current_app.instance_path + '/' + current_app.config['JWT_PUBLIC_FILE']) as f:
         jwt = f.read()

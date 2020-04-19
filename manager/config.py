@@ -1,7 +1,7 @@
 from os import getenv
 
 # Flask settings
-SECRET_KEY = getenv('MANAGER_SECRET_K', 'id_manager_secret')
+SECRET_KEY = getenv('MANAGER_SECRET_KEY')
 SESSION_COOKIE_NAME = 'id'
 
 # SQL Alchemy settings

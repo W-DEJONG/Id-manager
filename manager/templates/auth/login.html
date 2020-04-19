@@ -10,7 +10,14 @@
 <form action="" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <input type="text" name="username" placeholder="username"><br>
+    {% for message in form.errors.get('username', []) %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+
     <input type="text" name="password" placeholder="password"><br>
+    {% for message in form.errors.get('password', []) %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
     <label>
         <input type="checkbox" name="remember_me">
         <span>Remember me for 30 days</span>

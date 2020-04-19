@@ -7,7 +7,7 @@ from manager.oauth2 import require_oauth, generate_user_info
 bp = Blueprint(__name__, 'api')
 
 
-@bp.route('/api/user-info')
+@bp.route('/api/v2/user-info')
 @require_oauth('profile email roles', 'OR')
 def user_info():
     scope = current_token.scope

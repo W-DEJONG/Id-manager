@@ -6,8 +6,22 @@
 {% endfor %}
 <form action="" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <input type="text" name="username" placeholder="username"><br>
-    <input type="text" name="password" placeholder="password"><br>
+    {{ form.username.label }} {{ form.username }}<br>
+    {% for message in form.username.errors %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {{ form.email.label }} {{ form.email }}<br>
+    {% for message in form.email.errors %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {{ form.password.label }} {{ form.password }}<br>
+    {% for message in form.errors.get('password', []) %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {{ form.repeat_password.label }} {{ form.repeat_password }}<br>
+    {% for message in form.errors.get('repeat_password', []) %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
     <button type="submit">Signup</button>
 </form>
 </body>

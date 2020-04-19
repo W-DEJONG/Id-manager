@@ -8,6 +8,10 @@
 {% endfor %}
 <form action="" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <label>
+        <input type="checkbox" name="remember_me">
+        <span>Consent?</span>
+    </label><br>
     <button type="submit">Signup</button>
 </form>
 </body>
