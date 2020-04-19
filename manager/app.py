@@ -2,7 +2,7 @@ from flask import Flask
 from manager import config
 from manager.models import db
 from manager.oauth2 import config_oauth
-from manager.routes import auth, oauth
+from manager.routes import auth, oauth, api
 from manager.auth import csrf, login_manager
 
 
@@ -26,6 +26,7 @@ def create_app(test_config=None):
     config_oauth(app)
     app.register_blueprint(auth.bp)
     app.register_blueprint(oauth.bp)
+    app.register_blueprint(api.bp)
 
     @app.route('/_health')
     def health():
