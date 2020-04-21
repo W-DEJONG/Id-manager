@@ -91,7 +91,7 @@ def show_client(client_id):
 
 
 def _show_line():
-    click.echo('------------------------------------------------------------------------------')
+    click.echo(str().ljust(120, '-'))
 
 
 def _show_client_details(client: OAuth2Client):

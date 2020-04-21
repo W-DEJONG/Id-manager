@@ -51,7 +51,7 @@ def seed_db():
         middle_name='de',
         nickname='Wouter',
         email='wouter@maxilia.nl',
-        locale='NL',
+        locale='nl_NL',
         server_roles='connect admin'
     )
     db.session.add(user)

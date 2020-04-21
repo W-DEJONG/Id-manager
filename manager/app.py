@@ -7,6 +7,8 @@ from manager.oauth2 import config_oauth
 from manager.routes import auth, oauth, api
 from manager.auth import csrf, login_manager
 
+ALL_SERVER_ROLES = 'connect admin'
+
 
 def create_app(test_config=None):
     """

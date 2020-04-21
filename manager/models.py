@@ -20,6 +20,7 @@ class User(db.Model):
     locale = db.Column(db.String(20))
     email = db.Column(db.String(255))
     server_roles = db.Column(db.Text)
+    active = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.Integer, nullable=False, default=lambda: int(time.time()))
     updated_at = db.Column(db.Integer, nullable=False, default=lambda: int(time.time()),
                            onupdate=lambda: int(time.time()))
@@ -43,7 +44,7 @@ class User(db.Model):
 
     @property
     def is_active(self):
-        return True
+        return self.active
 
     @property
     def is_authenticated(self):
