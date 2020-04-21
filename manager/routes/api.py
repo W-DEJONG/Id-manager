@@ -1,13 +1,12 @@
 from authlib.integrations.flask_oauth2 import current_token
 from flask import Blueprint, jsonify
-
 from manager.models import UserRole, OAuth2Client
 from manager.oauth2 import require_oauth, generate_user_info
 
-bp = Blueprint(__name__, 'api')
+bp = Blueprint(__name__, 'api', url_prefix='/api')
 
 
-@bp.route('/api/v2/user-info')
+@bp.route('/me')
 @require_oauth('profile email roles', 'OR')
 def user_info():
     scope = current_token.scope

@@ -1,3 +1,5 @@
+import os
+
 from authlib.integrations.flask_oauth2 import (
     AuthorizationServer, ResourceProtector)
 from authlib.integrations.sqla_oauth2 import (
@@ -28,8 +30,11 @@ def read_file(file_name):
 
 
 def jwt_config():
+    file_path = current_app.config['JWT_PRIVATE_FILE'];
+    if not file_path.startswith('/'):
+        file_path = os.path.join(current_app.instance_path, file_path)
     return {
-        'key': read_file(current_app.instance_path + '/' + current_app.config['JWT_PRIVATE_FILE']),
+        'key': read_file(file_path),
         'alg': 'HS256',
         'iss': request.host_url,
         'exp': 3600,

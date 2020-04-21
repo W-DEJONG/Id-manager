@@ -6,7 +6,7 @@ SESSION_COOKIE_NAME = 'id'
 
 # SQL Alchemy settings
 SQLALCHEMY_TRACK_MODIFICATIONS = False,
-SQLALCHEMY_DATABASE_URI = getenv('MANAGER_DATABASE_URI', 'sqlite:///../instance/db.sqlite')
+SQLALCHEMY_DATABASE_URI = getenv('MANAGER_DATABASE_URI')
 
 # Authlib settings
 OAUTH2_TOKEN_EXPIRES_IN = dict(

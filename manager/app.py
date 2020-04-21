@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from manager import config
 from manager.models import db
@@ -12,11 +14,14 @@ def create_app(test_config=None):
     :param test_config: dict() with test configuration
     :return:
     """
-    app = Flask(__name__)
+    app = Flask(__name__,
+                static_folder=None,
+                instance_path=os.environ.get('MANAGER_INSTANCE_PATH'),
+                instance_relative_config=True)
 
     app.config.from_object(config)
     if test_config is None:
-        app.config.from_pyfile(app.instance_path + '/manager.conf', silent=True)
+        app.config.from_pyfile('manager.cfg', silent=True)
     else:
         app.config.from_mapping(test_config)
 

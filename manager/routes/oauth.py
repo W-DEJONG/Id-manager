@@ -1,12 +1,13 @@
+import os
 from flask import Blueprint, request, current_app
 from flask_login import current_user, login_required
 from manager.auth import csrf
 from manager.oauth2 import authorization, require_oauth, generate_user_info
 
-bp = Blueprint(__name__, 'oauth')
+bp = Blueprint(__name__, 'oauth', url_prefix='/oauth/v2')
 
 
-@bp.route('/oauth/v2/authorize', methods=('GET', 'POST'))
+@bp.route('/authorize', methods=('GET', 'POST'))
 @login_required
 def authorize():
     user = current_user
@@ -34,15 +35,19 @@ def authorize():
     # return render_template('oauth/authorize.html', user=user, grant=grant)
 
 
-@bp.route('/oauth/v2/token', methods=['POST'])
+@bp.route('/token', methods=['POST'])
 @csrf.exempt
 def issue_token():
     return authorization.create_token_response()
 
 
-@bp.route('/oauth/v2/config')
+@bp.route('/config')
 def oauth_config():
-    with open(current_app.instance_path + '/' + current_app.config['JWT_PUBLIC_FILE']) as f:
+    file_path = current_app.config['JWT_PUBLIC_FILE'];
+    if not file_path.startswith('/'):
+        file_path = os.path.join(current_app.instance_path, file_path)
+
+    with open(file_path) as f:
         jwt = f.read()
 
     return {

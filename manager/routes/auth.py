@@ -1,4 +1,3 @@
-import flask
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 from uuid import uuid4
 from flask_login import login_user, current_user, logout_user, login_required
@@ -6,12 +5,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import Length, InputRequired, Email
-
 from manager.auth import login_manager, verify_pwd, hash_pwd
 from manager.models import db, User
 from manager.auth import roles_required
 
-bp = Blueprint(__name__, 'auth')
+bp = Blueprint(__name__, 'auth', url_prefix='/auth')
 
 
 @login_manager.user_loader
@@ -33,7 +31,7 @@ class ProfileForm(FlaskForm):
     email = StringField('email', validators=[Length(min=0, max=255), Email(), InputRequired()])
 
 
-@bp.route('/auth/login', methods=('GET', 'POST'))
+@bp.route('/login', methods=('GET', 'POST'))
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -45,14 +43,14 @@ def login():
                     next_uri = session['next']
                     del session['next']
                 else:
-                    next_uri = '/user-profile'
-                return flask.redirect(next_uri)
+                    next_uri = url_for('.user_profile')
+                return redirect(next_uri)
         error = 'Invalid credentials'
         flash(error)
     return render_template('auth/login.html', user=current_user, form=form)
 
 
-@bp.route('/auth/logout', methods=('GET', 'POST'))
+@bp.route('/logout', methods=('GET', 'POST'))
 def logout():
     user = current_user
     if user.is_authenticated:
@@ -78,7 +76,7 @@ class CreateAccountForm(FlaskForm):
             raise ValueError("User already exists!")
 
 
-@bp.route('/auth/create-account', methods=('GET', 'POST'))
+@bp.route('/create-account', methods=('GET', 'POST'))
 @roles_required('admin')
 def create_account():
     form = CreateAccountForm()
@@ -94,7 +92,7 @@ def create_account():
         )
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('manager.routes.auth.user_profile'))
+        return redirect(url_for('.user_profile'))
     return render_template('auth/create_account.html', user=current_user, form=form)
 
     if request.method == 'POST':
@@ -114,7 +112,7 @@ def create_account():
                 )
                 db.session.add(user)
                 db.session.commit()
-                return redirect(url_for('manager.auth.login'))
+                return redirect(url_for('.login'))
             error = 'User {} is already registered.'.format(username)
         flash(error)
 
@@ -130,4 +128,4 @@ def user_profile():
         form.populate_obj(user)
         db.session.commit()
         flash('Changes saved!')
-    return render_template('edit_profile.html', user=user, form=form)
+    return render_template('auth/edit_profile.html', user=user, form=form)
