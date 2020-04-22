@@ -50,6 +50,7 @@ def create_user(user_name, email, given_name, family_name, middle_name, nickname
 @click.option('-k', '--nickname', type=click.STRING, help='nickname')
 @click.option('-l', '--locale', type=click.STRING, help='locale')
 def modify_user(user_id, **kwargs):
+    """ Modify user information """
     user = _find_user(user_id)
     if user is None:
         return 1

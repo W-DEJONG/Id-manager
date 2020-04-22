@@ -48,7 +48,7 @@ class User(db.Model):
 
     @property
     def is_authenticated(self):
-        return self.roles.validate_roles('connect')
+        return True
 
     @property
     def is_anonymous(self):
