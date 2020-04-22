@@ -37,7 +37,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user:
-            if verify_pwd(user.password, form.password.data):
+            if user.is_active and verify_pwd(user.password, form.password.data):
                 login_user(user, remember=form.remember_me.data)
                 if 'next' in session:
                     next_uri = session['next']

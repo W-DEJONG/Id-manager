@@ -1,28 +1,38 @@
-<html>
-<body>
-    <h1>Login</h1>
-{%  if user %}
-    {{  user.username }}
-{%  endif %}
-{% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-{% endfor %}
-<form action="" method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <input type="text" name="username" placeholder="username"><br>
-    {% for message in form.errors.get('username', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
+{% extends 'base-layout.html' %}
 
-    <input type="text" name="password" placeholder="password"><br>
-    {% for message in form.errors.get('password', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-    <label>
-        <input type="checkbox" name="remember_me">
-        <span>Remember me for 30 days</span>
-    </label><br>
-    <button type="submit">Signup</button>
-</form>
-</body>
-</html>
+{% block content %}
+    <div class="row my-4">
+        <div class="col"></div>
+        <div class="col-xs-auto align-self-center">
+            <h1>Login required</h1>
+            <div class="row my-4">
+                <div class="col">
+                    Please enter your credentials.
+                </div>
+            </div>
+            <form action="" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group">
+                    <label for="username">User name</label>
+                    <input type="text" name="username" class="form-control" id="username">
+                    {% for message in form.errors.get('username', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" id="password">
+                    {% for message in form.errors.get('password', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" name="remember_me" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="exampleCheck1">Remember me for 30 days</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="col"></div>
+    </div>
+{% endblock %}

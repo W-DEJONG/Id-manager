@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{#    <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">#}
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/google-fonts.css') }}">
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+{#    <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/main.css') }}">#}
+    <title>  </title>
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="container">
+            {% for category,  message in messages|unique|list %}
+                <div class="row pt-4">
+                    <div class="col-sm-12">
+                        <div class="card border-{{ category }} text-center">
+                          <div class="card-body text-{{ category }} p-1">
+                              {{ message }}
+                          </div>
+                        </div>
+                    </div>
+               </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+
+{#    <script src="{{ url_for('static', filename='js/main.js') }}"></script>#}
+{#    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>#}
+{#    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>#}
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>

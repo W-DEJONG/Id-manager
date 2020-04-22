@@ -17,7 +17,6 @@ def create_app(test_config=None):
     :return:
     """
     app = Flask(__name__,
-                static_folder=None,
                 instance_path=os.environ.get('MANAGER_INSTANCE_PATH'),
                 instance_relative_config=True)
 

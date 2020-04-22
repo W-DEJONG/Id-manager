@@ -1,41 +1,55 @@
-<html>
-<body>
-<h1>Edit profile</h1>
-{% if user %}
-    {{ user.get_full_name() }}
-{% endif %}
-{% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-{% endfor %}
-<form action="" method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+{% extends 'base-layout.html' %}
 
-    {{ form.given_name(placeholder=form.given_name.label.text) }}<br>
-    {% for message in form.errors.get('given_name', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-
-    <input type="text" name="middle_name" placeholder="middle_name" value="{{ form.middle_name.data }}"><br>
-    {% for message in form.errors.get('middle_name', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-
-    <input type="text" name="family_name" placeholder="family_name" value="{{ form.family_name.data }}"><br>
-    {% for message in form.errors.get('family_name', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-
-    {{ form.nickname }}<br>
-    {% for message in form.errors.get('nickname', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-
-    {{ form.email }}<br>
-    {% for message in form.errors.get('email', []) %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
-
-    <button type="submit">Update profile</button>
-</form>
-</body>
-</html>
+{% block content %}
+    <div class="row my-4">
+        <div class="col"></div>
+        <div class="col-xs-auto align-self-center">
+            <h1>Edit user profile</h1>
+            <div class="row my-4">
+                <div class="col">
+                    Please enter your personal information.
+                </div>
+            </div>
+            <form action="" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group">
+                    <label for="given_name">Given name</label>
+                    <input type="text" name="given_name" class="form-control" id="given_name">
+                    {% for message in form.errors.get('given_name', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="family_name" class="">Family name</label>
+                    <input type="text" name="family_name" class="form-control" id="family_name">
+                    {% for message in form.errors.get('family_name', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="middle_name">Middle name</label>
+                    <input type="text" name="middle_name" class="form-control" id="middle_name">
+                    {% for message in form.errors.get('middle_name', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="nickname">Nickname</label>
+                    <input type="text" name="nickname" class="form-control" id="nickname">
+                    {% for message in form.errors.get('nickname', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="form-control" id="email">
+                    {% for message in form.errors.get('email', []) %}
+                        <small class="form-text text-danger">{{ message }}</small>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="col"></div>
+    </div>
+{% endblock %}
