@@ -10,15 +10,6 @@ curl -u "3MEZIcvlhMPiTEcy46spogzg:POac9Sd4h0mrHZeXN9MljGB6oQRVJenKRnltCyDU10pvfH
 curl -H 'Accept: application/json' -H "Authorization: Bearer Tu8IQPUjZCoaXElnwQPXvRHDBvOViEUxOD1XuWNH6C" http://127.0.0.1:5000/user-info
 
 
-roles
-    - stock
-        - connect: basic access 
-        - admin: stock admin access
-        - warehouse
-            - cm: Warehouse C&M access
-            - clipper: Warehouse Clipper access
-            - pf: Warehouse PF access
-
 @require_role('stock:warehouse[cm|clipper|pf]')
 
 
@@ -26,31 +17,42 @@ roles
     admin: []
 }
 
-# Flask user command
-flask user ....
+# Flask commands
+## Database
+flask database init   
+flask database seed  
 
-## Create/delete user
-flask user create 
+## Client commands
+flask client create  
+flask client delete  
+flask client list  
+flask client show  
+flask client modify  
+
+## User commands
+
+### Create/delete user
+flask user create  
 flask user delete <users_id> 
 
-## Show user informatin
-flask user list 
-flask user show <user_id>
+### Show user informatin
+flask user list  
+flask user show <user_id>  
 
-## Alter user information
-flask user modify <user_id> 
-flask user password <users_id> 
-flask user enable <user_id> 
-flask user disable <user_id> 
+### Alter user information
+flask user modify <user_id>   
+flask user password <users_id>   
+flask user enable <user_id>  
+flask user disable <user_id>   
 
-# Server roles
-flask user roles <user_id> add <role>
-flask user roles <user_id> remove <role>
-flask user roles <user_id> all 
-flask user roles <user_id> clear
+### Server roles
+flask user roles <user_id> add <role>  
+flask user roles <user_id> remove <role>  
+flask user roles <user_id> all   
+flask user roles <user_id> clear  
 
-# client roles
-flask user roles <user_id> add <role> for <client>
-flask user roles <user_id> remove <role> for <client>
-flask user roles <user_id> all for <client>
-flask user roles <user_id> clear for <client>
+### client roles
+flask user roles <user_id> add <role> for <client>  
+flask user roles <user_id> remove <role> for <client>  
+flask user roles <user_id> all for <client>  
+flask user roles <user_id> clear for <client>  

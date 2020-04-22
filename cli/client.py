@@ -43,13 +43,46 @@ def create_client(client_tag, client_name, client_uri, redirect_url, scope, supp
     click.echo('')
     click.echo('About to create client:')
     client.set_client_metadata(client_metadata)
-    _show_line()
     _show_client_details(client)
-    _show_line()
     click.confirm('Create client?', abort=True)
     db.session.add(client)
     db.session.commit()
     click.echo("Client created")
+
+
+@bp.cli.command(name='modify')
+@click.argument('client-id')
+@click.option('-t', '--client-tag', type=click.STRING, help='client tag')
+@click.option('-n', '--client-name', type=click.STRING, help='client name')
+@click.option('-u', '--client-uri', type=click.STRING, help='client URI')
+@click.option('-r', '--redirect-url', type=click.STRING, help='redirect URL(s), multiple separated by <space>')
+@click.option('-s', '--scope', type=click.STRING, help='client scope')
+@click.option('-R', '--supported-roles', type=click.STRING, help='Supported user roles')
+def modify_client(client_id, client_tag, client_name, client_uri, redirect_url, scope, supported_roles):
+    """Modify an oauth2 client."""
+    client = _find_client(client_id)
+    if client is None:
+        return 1
+    if client_tag:
+        client.client_tag = client_tag
+    if supported_roles:
+        client.supported_roles = supported_roles
+    metadata = client.client_metadata
+    if client_name:
+        metadata['client_name'] = client_name
+        client.client_metadata = metadata
+    if client_uri:
+        metadata['client_uri'] = client_uri
+        client.client_metadata = metadata
+    if redirect_url:
+        metadata['redirect_url'] = redirect_url
+        client.client_metadata = metadata
+    if scope:
+        metadata['scope'] = scope
+        client.client_metadata = metadata
+
+    db.session.commit()
+    _show_client_details(client)
 
 
 @bp.cli.command(name='list', help='List all oauth clients.')
@@ -79,15 +112,19 @@ def list_clients(verbose):
 @bp.cli.command(name='show', help='Display oauth client details.')
 @click.argument('client-id')
 def show_client(client_id):
+    client = _find_client(client_id)
+    if client is None:
+        return 1
+    _show_client_details(client)
+
+
+def _find_client(client_id):
     client = OAuth2Client.query.filter_by(client_id=client_id).first()
     if client is None:
         client = OAuth2Client.query.filter_by(client_tag=client_id).first()
     if client is None:
         click.echo('Client not found.', err=True)
-        return 1
-    _show_line()
-    _show_client_details(client)
-    _show_line()
+    return client
 
 
 def _show_line():
