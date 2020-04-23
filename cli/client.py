@@ -70,17 +70,17 @@ def modify_client(client_id, client_tag, client_name, client_uri, redirect_uri, 
     metadata = client.client_metadata
     if client_name:
         metadata['client_name'] = client_name
-        client.client_metadata = metadata
+        client.set_client_metadata(metadata)
     if client_uri:
         metadata['client_uri'] = client_uri
-        client.client_metadata = metadata
+        client.set_client_metadata(metadata)
     if redirect_uri:
         uris = redirect_uri.split()
         metadata['redirect_uris'] = uris
-        client.client_metadata = metadata
+        client.set_client_metadata(metadata)
     if scope:
         metadata['scope'] = scope
-        client.client_metadata = metadata
+        client.set_client_metadata(metadata)
 
     db.session.commit()
     _show_client_details(client)
