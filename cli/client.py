@@ -55,10 +55,10 @@ def create_client(client_tag, client_name, client_uri, redirect_url, scope, supp
 @click.option('-t', '--client-tag', type=click.STRING, help='client tag')
 @click.option('-n', '--client-name', type=click.STRING, help='client name')
 @click.option('-u', '--client-uri', type=click.STRING, help='client URI')
-@click.option('-r', '--redirect-url', type=click.STRING, help='redirect URL(s), multiple separated by <space>')
+@click.option('-r', '--redirect-uri', type=click.STRING, help='redirect URI(s), multiple separated by <space>')
 @click.option('-s', '--scope', type=click.STRING, help='client scope')
 @click.option('-R', '--supported-roles', type=click.STRING, help='Supported user roles')
-def modify_client(client_id, client_tag, client_name, client_uri, redirect_url, scope, supported_roles):
+def modify_client(client_id, client_tag, client_name, client_uri, redirect_uri, scope, supported_roles):
     """Modify an oauth2 client."""
     client = _find_client(client_id)
     if client is None:
@@ -74,8 +74,9 @@ def modify_client(client_id, client_tag, client_name, client_uri, redirect_url, 
     if client_uri:
         metadata['client_uri'] = client_uri
         client.client_metadata = metadata
-    if redirect_url:
-        metadata['redirect_url'] = redirect_url
+    if redirect_uri:
+        uris = redirect_uri.split()
+        metadata['redirect_uris'] = uris
         client.client_metadata = metadata
     if scope:
         metadata['scope'] = scope
