@@ -1,5 +1,5 @@
 import time
-from manager.roles import Roles
+from id_roles import Roles
 from flask_sqlalchemy import SQLAlchemy
 from authlib.integrations.sqla_oauth2 import OAuth2ClientMixin, OAuth2TokenMixin, OAuth2AuthorizationCodeMixin
 from werkzeug.utils import cached_property

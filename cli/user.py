@@ -7,7 +7,7 @@ from flask.cli import with_appcontext
 from manager import ALL_SERVER_ROLES
 from manager.auth import hash_pwd
 from manager.models import User, db, UserRole, OAuth2Client, UserConsent, OAuth2AuthorizationCode, OAuth2Token
-from manager.roles import Roles
+from id_roles import Roles
 
 bp = Blueprint('user', __name__)
 bp.cli.help = 'Maintain users'
