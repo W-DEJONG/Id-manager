@@ -28,6 +28,8 @@ flask client delete
 flask client list  
 flask client show  
 flask client modify  
+flask client redirect <client_id> add <redirect_uri>  
+flask client redirect <client_id> remove <redirect_uri>  
 
 ## User commands
 

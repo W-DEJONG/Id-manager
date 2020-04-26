@@ -169,7 +169,7 @@ def user_roles_list(ctx):
     user = _find_user(ctx.obj['user_id'])
     if user is None:
         return 1
-    ctx.obj['user'] = user
+
     click.echo('Server roles: ' + user.server_roles)
     client_roles = UserRole.query.join(OAuth2Client).filter(UserRole.user == user).all()
     for role in client_roles:
