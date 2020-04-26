@@ -8,7 +8,7 @@ Flask-Login==0.5.0
 Flask-SQLAlchemy==2.4.1
 Flask-WTF==0.14.3
 gunicorn==20.0.4
-id-roles==0.0.5
+id-roles==0.0.6
 itsdangerous==1.1.0
 Jinja2==2.11.1
 MarkupSafe==1.1.1
