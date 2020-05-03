@@ -95,29 +95,6 @@ def create_account():
         return redirect(url_for('.user_profile'))
     return render_template('auth/create_account.html', user=current_user, form=form)
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        else:
-            user = User.query.filter_by(username=username).first()
-            if not user:
-                user = User(
-                    uuid=str(uuid4()),
-                    username=username,
-                    password=hash_pwd(password)
-                )
-                db.session.add(user)
-                db.session.commit()
-                return redirect(url_for('.login'))
-            error = 'User {} is already registered.'.format(username)
-        flash(error)
-
-    return render_template('auth/create_account.html')
-
 
 @bp.route('/user-profile', methods=('GET', 'POST'))
 @login_required
@@ -129,3 +106,34 @@ def user_profile():
         db.session.commit()
         flash('Changes saved!')
     return render_template('auth/edit_profile.html', user=user, form=form)
+
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[Length(min=5, max=200), InputRequired()])
+    password = PasswordField('Password', validators=[Length(min=5, max=200), InputRequired()])
+    repeat_password = PasswordField('Repeat password', validators=[Length(min=5, max=200), InputRequired()])
+
+    def validate_repeat_password(self, field):
+        if self.password.data != field.data:
+            raise ValueError("Passwords don't match!")
+
+
+@bp.route('/change-password', methods=('GET', 'POST'))
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        user = current_user
+        if user.is_active and verify_pwd(user.password, form.current_password.data):
+            user.password = hash_pwd(form.password.data)
+            db.session.commit()
+            if 'next' in session:
+                next_uri = session['next']
+                del session['next']
+            else:
+                next_uri = url_for('.user_profile')
+            flash('Password changed.')
+            return redirect(next_uri)
+        error = 'Invalid credentials'
+        flash(error)
+    return render_template('auth/change_pwd.html', user=current_user, form=form)
