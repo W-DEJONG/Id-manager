@@ -25,16 +25,17 @@ def valid_uri(uri):
 
 def parse_uri_str(uri_str):
     url_list = []
-    for uri in uri_str.split():
-        if not valid_uri(uri):
-            raise ValueError('Invalid uri: ' + uri)
-        url_list.append(uri)
+    if uri_str is not None:
+        for uri in uri_str.split():
+            if not valid_uri(uri):
+                raise ValueError('Invalid uri: ' + uri)
+            url_list.append(uri)
     return url_list
 
 
 def validate_uri(ctx, param, value):
     try:
-        if not valid_uri(value):
+        if value and not valid_uri(value):
             raise ValueError('Invalid uri: ' + value)
         return value
     except ValueError as e:
